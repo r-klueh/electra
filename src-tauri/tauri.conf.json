@@ -7,11 +7,14 @@
   },
   "package": {
     "productName": "electra",
-    "version": "0.0.0"
+    "version": "0.0.1"
   },
   "tauri": {
     "allowlist": {
       "all": false,
+      "dialog": {
+        "all": true
+      },
       "shell": {
         "all": false,
         "open": true
@@ -20,7 +23,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.tauri.dev",
+      "identifier": "de.rklueh.electra",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -36,7 +39,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "electra",
+        "title": "Electra",
         "width": 800,
         "height": 600
       }
