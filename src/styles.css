@@ -82,7 +82,7 @@ hr {
   flex-direction: column;
 
   overflow-y: auto;
-  max-height: 64vh;
+  max-height: 50vh;
   width: 100%;
 }
 
