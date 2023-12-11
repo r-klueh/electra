@@ -14,7 +14,7 @@
   const initialState: stateType = {
     extensions: [],
     selectedExtensions: [],
-    selectedPath: "some looooooooooonlooooooooooonlooooooooooonlooooooooooon test",
+    selectedPath: "",
     action: "idle"
   }
 
