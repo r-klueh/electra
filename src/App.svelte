@@ -1,63 +1,120 @@
 <script lang="ts">
-    import {open} from "@tauri-apps/api/dialog";
-    import {invoke} from "@tauri-apps/api/tauri";
+  import {open} from "@tauri-apps/api/dialog";
+  import {invoke} from "@tauri-apps/api/tauri";
 
-    let extensions: string[] = []
-    let selectedPath: string | string[] | null = ""
+  type actionType = "idle" | "indexing" | "deleting"
 
-    let fileCount = 0
+  type stateType = {
+    extensions: string[]
+    selectedExtensions: string[],
+    selectedPath: string | string[] | null
+    action: actionType
+  }
 
-    const countFiles = async () => {
-        try {
-            selectedPath = await open({
-                directory: true,
-                multiple: false,
-                title: "Ordner auswählen"
-            })
+  let state: stateType = {
+    extensions: [],
+    selectedExtensions: [],
+    selectedPath: "",
+    action: "idle"
+  }
 
-            if (selectedPath == null) {
-                return
-            }
+  const chooseDirectory = async () => {
+    try {
+      state.selectedPath = await open({
+        directory: true,
+        multiple: false,
+        title: "Ordner auswählen"
+      })
 
-            extensions = await invoke("get_file_count", {directory: selectedPath})
-        } catch (e) {
-            console.error(e)
-        }
+      if (state.selectedPath == null) {
+        state.selectedPath = ""
+        return
+      }
+
+      state.extensions = []
+
+      state.action = "indexing"
+
+      invoke("get_all_file_types", {directory: state.selectedPath})
+        .then(result => {
+          state.extensions = result as string[];
+          state.extensions.sort((a, b) => a.localeCompare(b));
+        })
+        .finally(() => state.action = "idle")
+
+    } catch (e) {
+      console.error(e)
     }
+  }
 
-    const chooseDirectory = async () => {
-        try {
-            selectedPath = await open({
-                directory: true,
-                multiple: false,
-                title: "Ordner auswählen"
-            })
-
-            if (selectedPath == null) {
-                return
-            }
-
-            extensions = await invoke("get_all_file_types", {directory: selectedPath})
-        } catch (e) {
-            console.error(e)
-        }
+  const updateExtensionSelection = (event: Event) => {
+    const extension = (event.target as HTMLInputElement).value;
+    if (state.selectedExtensions.find(ext => ext === extension)) {
+      state.selectedExtensions = state.selectedExtensions.filter(ext => ext !== extension)
+    } else {
+      state.selectedExtensions = [...state.selectedExtensions, extension]
     }
+  }
+
+  const deleteFiles = async () => {
+    try {
+      state.action = "deleting"
+      await invoke("delete_files", {
+        directory: state.selectedPath,
+        extensions: state.selectedExtensions.join("|")
+      })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      state.action = "idle"
+    }
+  }
+
 
 </script>
 
 <main class="container">
+  <section class="button-section">
     <span>
-    <button on:click={chooseDirectory}>Ordner auswählen</button>
-    <button on:click={countFiles}>Files zählen</button>
-    <span>{selectedPath}</span>
-    <span>{fileCount}</span>
+      <button on:click={chooseDirectory}
+              disabled={state.action === "indexing"}>
+        Ordner auswählen
+        {#if state.action === "indexing" }
+          <div class="loader"/>
+        {/if}
+      </button>
+      <span>{state.selectedPath}</span>
     </span>
-    <ul>
-        {#each extensions as extension}
-            <li><input type="checkbox"/>{extension}</li>
+  </section>
+  {#if (state.selectedPath?.length || 0) > 0}
+    <hr/>
+  {/if}
+  <section id="list-section">
+    <div>
+      <ul>
+        {#each state.extensions as extension}
+          <li>
+            <input type="checkbox"
+                   value={extension}
+                   checked={!!state.selectedExtensions.find(ext=>ext === extension)}
+                   on:change={updateExtensionSelection}
+            />
+            <span class="extension-list-item">{extension}</span>
+          </li>
         {/each}
-    </ul>
+      </ul>
+    </div>
+  </section>
+  {#if state.extensions.length > 0}
+    <hr/>
+    <section class="button-section">
+      <button on:click={deleteFiles}
+              disabled={state.action === "deleting" || state.extensions.length === 0}>
+        Löschen
+        {#if state.action === "deleting" }
+          <div class="loader"/>
+        {/if}
+      </button>
+    </section>
+  {/if}
 </main>
-<style>
-
-</style>
