@@ -1,5 +1,5 @@
 <script lang="ts">
-  import {open} from "@tauri-apps/api/dialog";
+  import {message, open} from "@tauri-apps/api/dialog";
   import {invoke} from "@tauri-apps/api/tauri";
 
   type actionType = "idle" | "indexing" | "deleting"
@@ -11,12 +11,14 @@
     action: actionType
   }
 
-  let state: stateType = {
+  const initialState: stateType = {
     extensions: [],
     selectedExtensions: [],
-    selectedPath: "",
+    selectedPath: "some looooooooooonlooooooooooonlooooooooooonlooooooooooon test",
     action: "idle"
   }
+
+  let state: stateType = {...initialState}
 
   const chooseDirectory = async () => {
     try {
@@ -59,14 +61,17 @@
   const deleteFiles = async () => {
     try {
       state.action = "deleting"
-      await invoke("delete_files", {
+      let deletedFileCount = await invoke("delete_files", {
         directory: state.selectedPath,
         extensions: state.selectedExtensions.join("|")
-      })
+      });
+      await message(`Anzahl gelöschter Dateien: ${deletedFileCount}`,
+        {title: "Electra: Löschen erfolgreich"}
+      )
     } catch (e) {
       console.error(e)
     } finally {
-      state.action = "idle"
+      state = {...initialState}
     }
   }
 
