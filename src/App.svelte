@@ -80,7 +80,6 @@
 
 <main class="container">
   <section class="button-section">
-    <span>
       <button on:click={chooseDirectory}
               disabled={state.action === "indexing"}>
         Ordner auswählen
@@ -89,7 +88,6 @@
         {/if}
       </button>
       <span>{state.selectedPath}</span>
-    </span>
   </section>
   {#if (state.selectedPath?.length || 0) > 0}
     <hr/>
