@@ -6,8 +6,8 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "electra",
-    "version": "0.0.1"
+    "productName": "Electra",
+    "version": "1.0.0"
   },
   "tauri": {
     "allowlist": {
