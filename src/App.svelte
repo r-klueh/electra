@@ -5,7 +5,7 @@
   type actionType = "idle" | "indexing" | "deleting"
 
   type stateType = {
-    extensions: string[]
+    extensions: Map<String, number>
     selectedExtensions: string[],
     selectedPath: string | string[] | null
     action: actionType
@@ -33,13 +33,14 @@
         return
       }
 
-      state.extensions = []
+      state.extensions = new Map()
 
       state.action = "indexing"
 
       invoke("get_all_file_types", {directory: state.selectedPath})
         .then(result => {
-          state.extensions = result as string[];
+          console.log(new Map(Object.entries(result)))
+          state.extensions = new Map(Object.entries(result))
           state.extensions.sort((a, b) => a.localeCompare(b));
         })
         .finally(() => state.action = "idle")
@@ -55,6 +56,14 @@
       state.selectedExtensions = state.selectedExtensions.filter(ext => ext !== extension)
     } else {
       state.selectedExtensions = [...state.selectedExtensions, extension]
+    }
+  }
+
+  const selectAll = () => {
+    if (state.selectedExtensions.length !== state.extensions.size) {
+      state.selectedExtensions = [...state.extensions.keys()]
+    } else {
+      state.selectedExtensions = []
     }
   }
 
@@ -80,39 +89,57 @@
 
 <main class="container">
   <section class="button-section">
-      <button on:click={chooseDirectory}
-              disabled={state.action === "indexing"}>
-        Ordner auswählen
-        {#if state.action === "indexing" }
-          <div class="loader"/>
-        {/if}
-      </button>
-      <span>{state.selectedPath}</span>
+    <button on:click={chooseDirectory}
+            disabled={state.action === "indexing"}>
+      Ordner auswählen
+      {#if state.action === "indexing" }
+        <div class="loader"/>
+      {/if}
+    </button>
+    <span>{state.selectedPath}</span>
   </section>
   {#if (state.selectedPath?.length || 0) > 0}
     <hr/>
+    <section id="table-section">
+      <div>
+        <table style="border-spacing: 0">
+          <tr>
+            <th>
+              <input type="checkbox"
+                     checked={state.selectedExtensions.length === state.extensions.size}
+                     on:change={selectAll}
+              />
+            </th>
+            <th colspan="2">
+              <span class="value-cell">Alle auswählen</span>
+            </th>
+          </tr>
+          {#each state.extensions.entries() as [extension, count]}
+            <tr>
+              <td>
+                <input type="checkbox"
+                       value={extension}
+                       checked={!!state.selectedExtensions.find(ext=>ext === extension)}
+                       on:change={updateExtensionSelection}
+                />
+              </td>
+              <td>
+                <span class="value-cell">{extension}</span>
+              </td>
+              <td style="text-align: right">
+                <span class="value-cell">{count}</span>
+              </td>
+            </tr>
+          {/each}
+        </table>
+      </div>
+    </section>
   {/if}
-  <section id="list-section">
-    <div>
-      <ul>
-        {#each state.extensions as extension}
-          <li>
-            <input type="checkbox"
-                   value={extension}
-                   checked={!!state.selectedExtensions.find(ext=>ext === extension)}
-                   on:change={updateExtensionSelection}
-            />
-            <span class="extension-list-item">{extension}</span>
-          </li>
-        {/each}
-      </ul>
-    </div>
-  </section>
-  {#if state.extensions.length > 0}
+  {#if state.extensions.size > 0}
     <hr/>
     <section class="button-section">
       <button on:click={deleteFiles}
-              disabled={state.action === "deleting" || state.extensions.length === 0}>
+              disabled={state.action === "deleting" || state.extensions.size === 0}>
         Löschen
         {#if state.action === "deleting" }
           <div class="loader"/>

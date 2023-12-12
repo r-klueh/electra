@@ -55,13 +55,6 @@ button:active {
   background-color: #0f0f0f69;
 }
 
-ul {
-  display: grid;
-  gap: 4px;
-  list-style-type: none;
-  margin: 0;
-}
-
 hr {
   width: 100%;
   margin: 1.5em;
@@ -75,7 +68,7 @@ hr {
   gap: 1em;
 }
 
-#list-section {
+#table-section {
   flex-grow: 2;
   display: flex;
   align-items: center;
@@ -86,7 +79,11 @@ hr {
   width: 100%;
 }
 
-.extension-list-item {
+th {
+  border-bottom: #f6f6f6 1px solid;
+}
+
+.value-cell {
   margin-left: 3px;
 }
 

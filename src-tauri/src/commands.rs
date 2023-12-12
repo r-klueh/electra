@@ -1,17 +1,21 @@
-use std::collections::HashSet;
+use std::collections::{HashMap};
 use std::ffi::OsStr;
 
 use walkdir::{DirEntry, WalkDir};
 
 #[tauri::command]
-pub async fn get_all_file_types(directory: &str) -> Result<HashSet<String>,()> {
-    Ok(HashSet::from_iter(
+pub async fn get_all_file_types(directory: &str) -> Result<HashMap<String, usize>,()> {
+    Ok(
         WalkDir::new(directory)
             .into_iter()
             .filter_map(|entry| entry.ok())
             .map(|e| to_extension(&e))
             .filter(|e| e.len() != 0)
-    ))
+            .fold(HashMap::new(), |mut acc, c| {
+                *acc.entry(c).or_insert(0) += 1;
+                acc
+            })
+    )
 }
 
 #[tauri::command]
