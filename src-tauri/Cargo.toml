@@ -1,7 +1,7 @@
 [package]
 name = "electra"
-version = "0.0.1"
-description = "A Tauri App"
+version = "1.0.1"
+description = "File delete utitlity"
 authors = ["rklueh"]
 license = ""
 repository = ""
