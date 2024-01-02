@@ -25,14 +25,30 @@ pub async fn delete_files(directory: &str, extensions: String) -> Result<usize,(
     WalkDir::new(directory)
         .into_iter()
         .filter_map(|entry| entry.ok())
+        .filter(|e| e.clone().into_path().is_file())
         .filter(|e| {
             let extension = to_extension(e);
-            println!("{}:{}", extensions, &&*extension);
-            return extension.len() > 0 && extensions.contains(&&*extension);
+            return extensions.contains(&&*extension);
         })
         .for_each(|e| {
             rm_rf::remove(e.path()).expect("failed to remove file");
             i += 1;
+            return ();
+        });
+
+
+    let directories:Vec<DirEntry> = WalkDir::new(directory)
+        .into_iter()
+        .filter_map(|entry| entry.ok())
+        .filter(|e| e.clone().into_path().is_dir())
+        .collect();
+
+    directories
+        .iter().rev()
+        .map(|e| e.clone())
+        .filter(|e| e.clone().into_path().read_dir().map(|mut i| i.next().is_none()).unwrap_or(false))
+        .for_each(|e| {
+            rm_rf::remove(e.path()).expect("failed to remove empty directory");
             return ();
         });
 

@@ -12,7 +12,7 @@
   }
 
   const initialState: stateType = {
-    extensions: [],
+    extensions: new Map(),
     selectedExtensions: [],
     selectedPath: "",
     action: "idle"
@@ -38,10 +38,8 @@
       state.action = "indexing"
 
       invoke("get_all_file_types", {directory: state.selectedPath})
-        .then(result => {
-          console.log(new Map(Object.entries(result)))
+        .then((result: any) => {
           state.extensions = new Map(Object.entries(result))
-          state.extensions.sort((a, b) => a.localeCompare(b));
         })
         .finally(() => state.action = "idle")
 
@@ -61,7 +59,7 @@
 
   const selectAll = () => {
     if (state.selectedExtensions.length !== state.extensions.size) {
-      state.selectedExtensions = [...state.extensions.keys()]
+      state.selectedExtensions = [...state.extensions.keys()] as string[]
     } else {
       state.selectedExtensions = []
     }
