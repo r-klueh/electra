@@ -1,7 +1,8 @@
-# Tauri + Svelte + Typescript
+# Introduction
 
-This template should help get you started developing with Tauri, Svelte and TypeScript in Vite.
+Utility-Program to delete files based on file extensions.
+Files are irreversibly removed from the harddrive.
 
-## Recommended IDE Setup
+# Build Instructions
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+See https://tauri.app/v1/guides/building/
