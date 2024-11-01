@@ -1,6 +1,6 @@
 [package]
 name = "electra"
-version = "1.0.1"
+version = "1.0.2"
 description = "File delete utitlity"
 authors = ["rklueh"]
 license = ""
@@ -10,13 +10,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "2.0.6", features = [] }
 
 [dependencies]
-tauri = { version = "1.5", features = ["dialog-all", "shell-open"] }
+tauri = { version = "2.0.6", features = ["dialog-all", "shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-walkdir = "2.4.0"
+walkdir = "2.5.0"
 rm_rf = "0.6.2"
 
 
