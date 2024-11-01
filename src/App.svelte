@@ -1,6 +1,6 @@
 <script lang="ts">
-  import {message, open} from "@tauri-apps/api/dialog";
-  import {invoke} from "@tauri-apps/api/tauri";
+  import {message, open} from "@tauri-apps/plugin-dialog";
+  import {invoke} from "@tauri-apps/api/core";
 
   type actionType = "idle" | "indexing" | "deleting"
 
@@ -91,7 +91,7 @@
             disabled={state.action === "indexing"}>
       Ordner auswählen
       {#if state.action === "indexing" }
-        <div class="loader"/>
+        <div class="loader"></div>
       {/if}
     </button>
     <span>{state.selectedPath}</span>
@@ -101,6 +101,7 @@
     <section id="table-section">
       <div>
         <table style="border-spacing: 0">
+          <thead>
           <tr>
             <th>
               <input type="checkbox"
@@ -112,6 +113,9 @@
               <span class="value-cell">Alle auswählen</span>
             </th>
           </tr>
+          </thead>
+          <tbody>
+
           {#each state.extensions.entries() as [extension, count]}
             <tr>
               <td>
@@ -129,6 +133,7 @@
               </td>
             </tr>
           {/each}
+          </tbody>
         </table>
       </div>
     </section>
@@ -140,7 +145,7 @@
               disabled={state.action === "deleting" || state.extensions.size === 0}>
         Löschen
         {#if state.action === "deleting" }
-          <div class="loader"/>
+          <div class="loader"></div>
         {/if}
       </button>
     </section>
